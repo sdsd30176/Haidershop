@@ -31,12 +31,16 @@
             border-radius: 10px;
         }
 
-        .product-container img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
+        .product-images {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+        }
+
+        .product-images img {
+            min-width: 100%;
+            scroll-snap-align: start;
             border-radius: 5px;
-            margin-bottom: 20px;
         }
 
         .product-details {
@@ -104,7 +108,9 @@
         const imagesHTML = product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("");
 
         productContainer.innerHTML = `
-            ${imagesHTML}
+            <div class="product-images">
+                ${imagesHTML}
+            </div>
             <div class="product-details">
                 <span>الاسم: ${product.name}</span>
                 <span>السعر الأدنى: ${product.minPrice || "غير محدد"}$</span>
@@ -121,17 +127,16 @@
     }
 
     function downloadImages() {
-        const links = product.images.map(image => {
+        const product = JSON.parse(sessionStorage.getItem('product'));
+        product.images.forEach(image => {
             const link = document.createElement("a");
             link.href = image;
             link.download = "";
             link.style.display = "none";
             document.body.appendChild(link);
-            return link;
+            link.click();
+            document.body.removeChild(link);
         });
-
-        links.forEach(link => link.click());
-        links.forEach(link => document.body.removeChild(link));
     }
 
     function buyNow() {
