@@ -1,82 +1,143 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفاصيل المنتج</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            padding: 20px;
-        }
-        .product-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #444;
-            border-radius: 10px;
-            background-color: #1e1e1e;
-        }
-        .product-image img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-        .product-title {
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        .product-details {
-            margin: 10px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحة المنتج</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 15px;
+      text-align: center;
+      color: #ffa726;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .product-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .product-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .product-title {
+      font-size: 22px;
+      color: #ffa726;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #76ff03;
+    }
+
+    .product-description {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn.buy {
+      background-color: #ffa726;
+      color: #000;
+    }
+
+    .btn.buy:hover {
+      background-color: #ffcc80;
+    }
+
+    .btn.cart {
+      background-color: #76ff03;
+      color: #000;
+    }
+
+    .btn.cart:hover {
+      background-color: #a3ff74;
+    }
+
+    @media (max-width: 768px) {
+      .product-card {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="product-container">
-        <div class="product-image">
-            <img id="product-image" src="" alt="صورة المنتج">
-        </div>
-        <h1 id="product-title" class="product-title"></h1>
-        <p id="product-description" class="product-details"></p>
-        <p id="product-price" class="product-details"></p>
-        <button onclick="goBack()">الرجوع</button>
+
+<header>
+  صفحة المنتج
+</header>
+
+<div class="container">
+  <div class="product-card">
+    <!-- صورة المنتج -->
+    <img src="https://b.top4top.io/p_3293q4orx0.png" alt="صورة المنتج">
+
+    <!-- تفاصيل المنتج -->
+    <div class="product-details">
+      <h1 class="product-title">اسم المنتج</h1>
+      <p class="product-price">السعر: 150$</p>
+      <p class="product-description">
+        هذا هو وصف المنتج. يمكن أن يكون هنا معلومات تفصيلية عن المنتج ومزاياه واستخداماته.
+      </p>
+
+      <!-- الأزرار -->
+      <div class="actions">
+        <button class="btn buy">اشتري الآن</button>
+        <button class="btn cart">أضف إلى السلة</button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        const apiURL = "https://67717abc2ffbd37a63cf2d47.mockapi.io/Prodect";
-
-        // استخراج معرف المنتج من رابط الصفحة
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get("id");
-
-        // الدالة لجلب تفاصيل المنتج
-        async function fetchProductDetails(id) {
-            try {
-                const response = await fetch(`${apiURL}/${id}`);
-                const product = await response.json();
-
-                // تحديث محتوى الصفحة
-                document.getElementById("product-image").src = product.images[0] || "placeholder.jpg";
-                document.getElementById("product-title").textContent = product.name;
-                document.getElementById("product-description").textContent = product.description || "لا توجد تفاصيل متاحة.";
-                document.getElementById("product-price").textContent = `السعر: ${product.minprice || "غير محدد"}$`;
-            } catch (error) {
-                console.error("حدث خطأ أثناء جلب البيانات:", error);
-            }
-        }
-
-        // دالة الرجوع
-        function goBack() {
-            window.history.back();
-        }
-
-        // جلب تفاصيل المنتج عند تحميل الصفحة
-        if (productId) {
-            fetchProductDetails(productId);
-        } else {
-            alert("معرف المنتج غير موجود في الرابط!");
-        }
-    </script>
 </body>
 </html>
