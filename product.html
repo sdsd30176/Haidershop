@@ -98,6 +98,7 @@
         try {
             const response = await fetch(`${apiURL}/${productId}`);
             const product = await response.json();
+            sessionStorage.setItem('product', JSON.stringify(product));
             displayProductDetails(product);
         } catch (error) {
             console.error("حدث خطأ أثناء جلب بيانات المنتج:", error);
