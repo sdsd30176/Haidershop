@@ -48,20 +48,23 @@
             margin-bottom: 10px;
         }
 
-        .product-profit {
-            background-color: #76ff03;
-            color: #000;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
+        .buttons-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            top: -15px;
-            right: -15px;
+            justify-content: space-between;
+        }
+
+        .buttons-container button {
+            padding: 10px 20px;
+            background-color: #ffa726;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
+        }
+
+        .buttons-container button:hover {
+            background-color: #ffcc80;
         }
     </style>
 </head>
@@ -98,17 +101,45 @@
     }
 
     function displayProductDetails(product) {
+        const imagesHTML = product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("");
+
         productContainer.innerHTML = `
-            <div class="product-profit">${product.profit || "0$"}</div>
-            <img src="${product.images[0] || "placeholder.jpg"}" alt="صورة المنتج">
+            ${imagesHTML}
             <div class="product-details">
                 <span>الاسم: ${product.name}</span>
                 <span>السعر الأدنى: ${product.minPrice || "غير محدد"}$</span>
                 <span>السعر الأعلى: ${product.maxPrice || "غير محدد"}$</span>
-                <span>الربح: ${product.profit/100*60 || "غير محدد"}$</span>
+                <span>الربح: ${product.profit || "غير محدد"}$</span>
                 <span>الوصف: ${product.description || "لا يوجد وصف"}</span>
             </div>
+            <div class="buttons-container">
+                <button onclick="downloadImages()">تحميل جميع الصور</button>
+                <button onclick="buyNow()">الشراء الآن</button>
+                <button onclick="addToCart()">أضف إلى السلة</button>
+            </div>
         `;
+    }
+
+    function downloadImages() {
+        const links = product.images.map(image => {
+            const link = document.createElement("a");
+            link.href = image;
+            link.download = "";
+            link.style.display = "none";
+            document.body.appendChild(link);
+            return link;
+        });
+
+        links.forEach(link => link.click());
+        links.forEach(link => document.body.removeChild(link));
+    }
+
+    function buyNow() {
+        alert("تم الضغط على زر الشراء الآن!");
+    }
+
+    function addToCart() {
+        window.location.href = `sella.html?id=${productId}`;
     }
 
     fetchProductDetails();
