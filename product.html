@@ -179,4 +179,41 @@
         window.prevImage = function() {
             const images = document.querySelectorAll('.product-images img');
             images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex > 0) ? currentIndex
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+            images[currentIndex].classList.add('active');
+        }
+
+        window.nextImage = function() {
+            const images = document.querySelectorAll('.product-images img');
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            images[currentIndex].classList.add('active');
+        }
+    }
+
+    function downloadImages() {
+        const selectedImages = document.querySelectorAll('.image-select:checked');
+        selectedImages.forEach(checkbox => {
+            const link = document.createElement("a");
+            link.href = checkbox.dataset.url;
+            link.setAttribute("download", checkbox.dataset.url.split('/').pop());
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
+    function buyNow() {
+        alert("تم الضغط على زر الشراء الآن!");
+    }
+
+    function addToCart() {
+        window.location.href = `sella.html?id=${productId}`;
+    }
+
+    fetchProductDetails();
+</script>
+
+</body>
+</html>
