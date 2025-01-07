@@ -29,18 +29,37 @@
             padding: 20px;
             background-color: #1e1e1e;
             border-radius: 10px;
+            text-align: center;
         }
 
         .product-images {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
+            position: relative;
+            margin-bottom: 20px;
         }
 
         .product-images img {
-            min-width: 100%;
-            scroll-snap-align: start;
+            max-width: 100%;
+            max-height: 300px;
             border-radius: 5px;
+        }
+
+        .image-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .image-buttons button {
+            padding: 5px 10px;
+            background-color: #ffa726;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .image-buttons button:hover {
+            background-color: #ffcc80;
         }
 
         .product-details {
@@ -93,6 +112,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
+    let currentImageIndex = 0; // لتتبع الصورة الحالية
+
     // جلب تفاصيل المنتج بناءً على معرف المنتج
     async function fetchProductDetails() {
         try {
@@ -106,11 +127,15 @@
     }
 
     function displayProductDetails(product) {
-        const imagesHTML = product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("");
+        const image = product.images[currentImageIndex]; // عرض الصورة الحالية فقط
 
         productContainer.innerHTML = `
             <div class="product-images">
-                ${imagesHTML}
+                <img id="current-image" src="${image}" alt="صورة المنتج">
+                <div class="image-buttons">
+                    <button onclick="prevImage()">السابق</button>
+                    <button onclick="nextImage()">التالي</button>
+                </div>
             </div>
             <div class="product-details">
                 <span>الاسم: ${product.name}</span>
@@ -127,12 +152,24 @@
         `;
     }
 
+    function nextImage() {
+        const product = JSON.parse(sessionStorage.getItem('product'));
+        currentImageIndex = (currentImageIndex + 1) % product.images.length;
+        document.getElementById("current-image").src = product.images[currentImageIndex];
+    }
+
+    function prevImage() {
+        const product = JSON.parse(sessionStorage.getItem('product'));
+        currentImageIndex = (currentImageIndex - 1 + product.images.length) % product.images.length;
+        document.getElementById("current-image").src = product.images[currentImageIndex];
+    }
+
     function downloadImages() {
         const product = JSON.parse(sessionStorage.getItem('product'));
-        product.images.forEach(image => {
+        product.images.forEach((image, index) => {
             const link = document.createElement("a");
             link.href = image;
-            link.download = "";
+            link.download = `صورة_${index + 1}`;
             link.style.display = "none";
             document.body.appendChild(link);
             link.click();
