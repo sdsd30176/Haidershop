@@ -160,16 +160,18 @@
         }
 
         window.prevImage = function() {
+            const images = document.querySelectorAll('.product-images img');
             if (currentIndex > 0) {
                 currentIndex--;
             } else {
-                currentIndex = product.images.length - 1;
+                currentIndex = images.length - 1;
             }
             updateImage();
         }
 
         window.nextImage = function() {
-            if (currentIndex < product.images.length - 1) {
+            const images = document.querySelectorAll('.product-images img');
+            if (currentIndex < images.length - 1) {
                 currentIndex++;
             } else {
                 currentIndex = 0;
