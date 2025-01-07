@@ -32,15 +32,16 @@
         }
 
         .product-images {
-            display: flex;
-            overflow: hidden;
             position: relative;
         }
 
         .product-images img {
-            min-width: 100%;
-            transition: transform 0.5s ease;
-            border-radius: 5px;
+            width: 100%;
+            display: none;
+        }
+
+        .product-images img.active {
+            display: block;
         }
 
         .product-images button {
@@ -127,7 +128,9 @@
     function displayProductDetails(product) {
         let currentIndex = 0;
 
-        const imagesHTML = product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("");
+        const imagesHTML = product.images.map((image, index) => 
+            `<img src="${image}" alt="صورة المنتج" class="${index === 0 ? 'active' : ''}">`
+        ).join("");
         const imagesContainer = `
             <div class="product-images">
                 ${imagesHTML}
@@ -140,8 +143,8 @@
             ${imagesContainer}
             <div class="product-details">
                 <span>الاسم: ${product.name}</span>
-                <span>السعر الأدنى: ${product.minPrice || "غير محدد"}$</span>
-                <span>السعر الأعلى: ${product.maxPrice || "غير محدد"}$</span>
+                <span>السعر الأدنى: ${product.minprice || "غير محدد"}$</span>
+                <span>السعر الأعلى: ${product.maxprice || "غير محدد"}$</span>
                 <span>الربح: ${product.profit || "غير محدد"}$</span>
                 <span>الوصف: ${product.description || "لا يوجد وصف"}</span>
             </div>
@@ -152,31 +155,18 @@
             </div>
         `;
 
-        function updateImage() {
-            const images = document.querySelectorAll('.product-images img');
-            images.forEach((img, index) => {
-                img.style.transform = `translateX(-${currentIndex * 100}%)`;
-            });
-        }
-
         window.prevImage = function() {
             const images = document.querySelectorAll('.product-images img');
-            if (currentIndex > 0) {
-                currentIndex--;
-            } else {
-                currentIndex = images.length - 1;
-            }
-            updateImage();
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+            images[currentIndex].classList.add('active');
         }
 
         window.nextImage = function() {
             const images = document.querySelectorAll('.product-images img');
-            if (currentIndex < images.length - 1) {
-                currentIndex++;
-            } else {
-                currentIndex = 0;
-            }
-            updateImage();
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            images[currentIndex].classList.add('active');
         }
     }
 
