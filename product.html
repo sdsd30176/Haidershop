@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -176,7 +175,7 @@
         product.images.forEach(image => {
             const link = document.createElement("a");
             link.href = image;
-            link.setAttribute("download", `${product.name}-${image.split('/').pop()}`);
+            link.setAttribute("download", "product_image");
             link.style.display = "none";
             document.body.appendChild(link);
             link.click();
