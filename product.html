@@ -175,7 +175,7 @@
         product.images.forEach(image => {
             const link = document.createElement("a");
             link.href = image;
-            link.setAttribute("download", "product_image");
+            link.setAttribute("download", image.split('/').pop());
             link.style.display = "none";
             document.body.appendChild(link);
             link.click();
