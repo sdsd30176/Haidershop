@@ -113,7 +113,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // جلب تفاصيل المنتج بناءً على معرف المنتج
     async function fetchProductDetails() {
         try {
             const response = await fetch(`${apiURL}/${productId}`);
@@ -150,7 +149,6 @@
             </div>
         `;
 
-        // إضافة الصور إلى الجلسة
         sessionStorage.setItem('productImages', JSON.stringify(product.images));
     }
 
@@ -170,14 +168,12 @@
     }
 
     function downloadImages() {
-        const product = JSON.parse(sessionStorage.getItem('product'));
-        product.images.forEach((image, index) => {
+        const images = JSON.parse(sessionStorage.getItem('productImages'));
+        images.forEach((imageUrl, index) => {
             const link = document.createElement("a");
-            link.href = image;
-            link.download = `صورة_${index + 1}.jpg`; // اسم مميز لكل صورة
-            document.body.appendChild(link);
+            link.href = imageUrl;
+            link.download = `image_${index + 1}.jpg`; // حفظ كل صورة باسم مميز
             link.click();
-            document.body.removeChild(link);
         });
     }
 
