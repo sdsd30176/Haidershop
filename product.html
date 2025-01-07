@@ -29,37 +29,38 @@
             padding: 20px;
             background-color: #1e1e1e;
             border-radius: 10px;
-            text-align: center;
         }
 
         .product-images {
             position: relative;
-            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .product-images img {
-            max-width: 100%;
+            width: 100%;
             max-height: 300px;
             border-radius: 5px;
         }
 
-        .image-buttons {
+        .image-navigation {
+            position: absolute;
+            top: 50%;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
+            transform: translateY(-50%);
         }
 
-        .image-buttons button {
-            padding: 5px 10px;
-            background-color: #ffa726;
-            color: #000;
+        .image-navigation button {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            padding: 10px;
             cursor: pointer;
-        }
-
-        .image-buttons button:hover {
-            background-color: #ffcc80;
+            border-radius: 50%;
         }
 
         .product-details {
@@ -112,8 +113,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    let currentImageIndex = 0; // لتتبع الصورة الحالية
-
     // جلب تفاصيل المنتج بناءً على معرف المنتج
     async function fetchProductDetails() {
         try {
@@ -127,16 +126,16 @@
     }
 
     function displayProductDetails(product) {
-        const image = product.images[currentImageIndex]; // عرض الصورة الحالية فقط
+        const imagesHTML = `
+            <div class="product-images">
+                <button class="prev-image" onclick="prevImage()">&#10094;</button>
+                <img id="current-image" src="${product.images[0]}" alt="صورة المنتج">
+                <button class="next-image" onclick="nextImage()">&#10095;</button>
+            </div>
+        `;
 
         productContainer.innerHTML = `
-            <div class="product-images">
-                <img id="current-image" src="${image}" alt="صورة المنتج">
-                <div class="image-buttons">
-                    <button onclick="prevImage()">السابق</button>
-                    <button onclick="nextImage()">التالي</button>
-                </div>
-            </div>
+            ${imagesHTML}
             <div class="product-details">
                 <span>الاسم: ${product.name}</span>
                 <span>السعر الأدنى: ${product.minPrice || "غير محدد"}$</span>
@@ -150,18 +149,24 @@
                 <button onclick="addToCart()">أضف إلى السلة</button>
             </div>
         `;
+
+        // إضافة الصور إلى الجلسة
+        sessionStorage.setItem('productImages', JSON.stringify(product.images));
     }
 
+    let currentImageIndex = 0;
+
     function nextImage() {
-        const product = JSON.parse(sessionStorage.getItem('product'));
-        currentImageIndex = (currentImageIndex + 1) % product.images.length;
-        document.getElementById("current-image").src = product.images[currentImageIndex];
+        const images = JSON.parse(sessionStorage.getItem('productImages'));
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        document.getElementById('current-image').src = images[currentImageIndex];
     }
 
     function prevImage() {
-        const product = JSON.parse(sessionStorage.getItem('product'));
-        currentImageIndex = (currentImageIndex - 1 + product.images.length) % product.images.length;
-        document.getElementById("current-image").src = product.images[currentImageIndex];
+        const images = JSON.parse(sessionStorage.getItem('productImages'));
+        currentImageIndex =
+            (currentImageIndex - 1 + images.length) % images.length;
+        document.getElementById('current-image').src = images[currentImageIndex];
     }
 
     function downloadImages() {
@@ -169,8 +174,7 @@
         product.images.forEach((image, index) => {
             const link = document.createElement("a");
             link.href = image;
-            link.download = `صورة_${index + 1}`;
-            link.style.display = "none";
+            link.download = `صورة_${index + 1}.jpg`; // اسم مميز لكل صورة
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
