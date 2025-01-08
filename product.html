@@ -1,219 +1,57 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفاصيل المنتج</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            direction: rtl;
-        }
-
-        header {
-            background-color: #1f1f1f;
-            color: #ffa726;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        .product-container {
-            margin: 20px;
-            padding: 20px;
-            background-color: #1e1e1e;
-            border-radius: 10px;
-        }
-
-        .product-images {
-            position: relative;
-        }
-
-        .product-images img {
-            width: 100%;
-            display: none;
-        }
-
-        .product-images img.active {
-            display: block;
-        }
-
-        .product-images button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .product-images .prev {
-            left: 10px;
-        }
-
-        .product-images .next {
-            right: 10px;
-        }
-
-        .product-details {
-            margin-bottom: 20px;
-        }
-
-        .product-details span {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .buttons-container {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .buttons-container button {
-            padding: 10px 20px;
-            background-color: #ffa726;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .buttons-container button:hover {
-            background-color: #ffcc80;
-        }
-
-        .image-checkbox {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px;
-            border-radius: 5px;
-            color: #fff;
-        }
-
-        .image-checkbox input {
-            margin-left: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل المنتج</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      direction: rtl;
+    }
+    .product-details {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .product-details img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
+  <div class="product-details" id="product-details"></div>
 
-<header>
-    <div class="logo">عشتار</div>
-    <div class="icons">
-        <span class="material-icons">shopping_cart</span>
-        <span class="material-icons">support_agent</span>
-        <span class="material-icons">account_circle</span>
-    </div>
-</header>
+  <script>
+    const apiURL = "(link unavailable)";
+    const productDetails = document.getElementById("product-details");
 
-<div class="product-container" id="product-container">
-    <!-- سيتم عرض تفاصيل المنتج هنا -->
-</div>
-
-<script>
-    const apiURL = "https://67717abc2ffbd37a63cf2d47.mockapi.io/Prodect";
-    const productContainer = document.getElementById("product-container");
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
-
-    // جلب تفاصيل المنتج بناءً على معرف المنتج
-    async function fetchProductDetails() {
-        try {
-            const response = await fetch(`${apiURL}/${productId}`);
-            const product = await response.json();
-            sessionStorage.setItem('product', JSON.stringify(product));
-            displayProductDetails(product);
-        } catch (error) {
-            console.error("حدث خطأ أثناء جلب بيانات المنتج:", error);
-        }
-    }
-
-    function displayProductDetails(product) {
-        let currentIndex = 0;
-
-        const imagesHTML = product.images.map((image, index) => 
-            `<div class="image-wrapper">
-                <img src="${image}" alt="صورة المنتج" class="${index === 0 ? 'active' : ''}">
-                <div class="image-checkbox">
-                    <label>تحميل<input type="checkbox" class="image-select" data-url="${image}"></label>
-                </div>
-            </div>`
-        ).join("");
-        const imagesContainer = `
-            <div class="product-images">
-                ${imagesHTML}
-                <button class="prev" onclick="prevImage()">‹</button>
-                <button class="next" onclick="nextImage()">›</button>
+    window.onload = () => {
+      const productId = new URLSearchParams(window.location.search).get("id");
+      fetch(`${apiURL}/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+          productDetails.innerHTML = `
+            <h2>${product.name}</h2>
+            <p>السعر الأدنى: ${product.minprice}$</p>
+            <p>السعر الأعلى: ${product.maxprice}$</p>
+            <div class="images">
+              ${product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("")}
             </div>
-        `;
-
-        productContainer.innerHTML = `
-            ${imagesContainer}
-            <div class="product-details">
-                <span>الاسم: ${product.name}</span>
-                <span>السعر الأدنى: ${product.minprice || "غير محدد"}$</span>
-                <span>السعر الأعلى: ${product.maxprice || "غير محدد"}$</span>
-                <span>الربح: ${product.profit || "غير محدد"}$</span>
-                <span>الوصف: ${product.description || "لا يوجد وصف"}</span>
-            </div>
-            <div class="buttons-container">
-                <button onclick="downloadImages()">تحميل جميع الصور</button>
-                <button onclick="buyNow()">الشراء الآن</button>
-                <button onclick="addToCart()">أضف إلى السلة</button>
-            </div>
-        `;
-
-        window.prevImage = function() {
-            const images = document.querySelectorAll('.product-images img');
-            images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
-            images[currentIndex].classList.add('active');
-        }
-
-        window.nextImage = function() {
-            const images = document.querySelectorAll('.product-images img');
-            images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
-            images[currentIndex].classList.add('active');
-        }
-    }
-
-    function downloadImages() {
-        const selectedImages = document.querySelectorAll('.image-select:checked');
-        selectedImages.forEach(checkbox => {
-            const link = document.createElement("a");
-            link.href = checkbox.dataset.url;
-            link.setAttribute("download", checkbox.dataset.url.split('/').pop());
-            link.style.display = "none";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            <p>الوصف: ${product.description}</p>
+          `;
         });
-    }
-
-    function buyNow() {
-        alert("تم الضغط على زر الشراء الآن!");
-    }
-
-    function addToCart() {
-        window.location.href = `sella.html?id=${productId}`;
-    }
-
-    fetchProductDetails();
-</script>
-
+    };
+  </script>
 </body>
 </html>
