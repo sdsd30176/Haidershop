@@ -1,50 +1,190 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تفاصيل المنتج</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: #e0e0e0;
-      direction: rtl;
-    }
-    .product-details {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #1e1e1e;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة المنتجات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* نفس الأسلوب من الصفحة الأصلية هنا */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            direction: rtl;
+            position: relative;
+        }
+
+        /* أضف هنا أي أسلوب إضافي تحتاجه لتفاصيل المنتج */
+        .product-details {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+        }
+
+        .product-details img {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .product-details h2 {
+            margin-bottom: 10px;
+            color: #ffa726;
+        }
+
+        .product-details p {
+            margin-bottom: 20px;
+        }
+
+        .product-details .price-range {
+            color: #ffcc80;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .product-details .product-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .product-details .product-images img {
+            max-width: 100px;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-  <div class="product-details" id="product-details"></div>
 
-  <script>
-    const apiURL = "(link unavailable)";
+<header>
+    <div class="logo">عشتار</div>
+    <div class="icons">
+        <span class="material-icons">shopping_cart</span>
+        <span class="material-icons">support_agent</span>
+        <span class="material-icons">account_circle</span>
+    </div>
+</header>
+
+<div class="search-container">
+    <span class="material-icons menu-icon" onclick="toggleMenu()">menu</span>
+    <input type="text" placeholder="ابحث عن المنتجات..." id="search-input" oninput="searchProducts()">
+</div>
+
+<div class="menu-overlay" id="menu-overlay">
+    <ul class="menu-list">
+        <li onclick="filterProducts('all')">الكل</li>
+        <li onclick="filterProducts('أجهزة كهربائية')">أجهزة كهربائية</li>
+        <li onclick="filterProducts('حقائب')">حقائب</li>
+    </ul>
+</div>
+
+<div class="product-grid" id="product-grid">
+    <!-- سيتم عرض المنتجات هنا -->
+</div>
+
+<div class="product-details" id="product-details" style="display:none;">
+    <!-- سيتم عرض تفاصيل المنتج هنا -->
+</div>
+
+<script>
+    const apiURL = "https://67717abc2ffbd37a63cf2d47.mockapi.io/Prodect";
+    const productGrid = document.getElementById("product-grid");
+    const menuOverlay = document.getElementById("menu-overlay");
     const productDetails = document.getElementById("product-details");
 
-    document.addEventListener("DOMContentLoaded", function() {
-      const productId = new URLSearchParams(window.location.search).get("id");
-      fetch(`${apiURL}/${productId}`)
-        .then(response => response.json())
-        .then(product => {
-          productDetails.innerHTML = `
-            <h2>${product.name}</h2>
-            <p>السعر الأدنى: ${product.minprice}$</p>
-            <p>السعر الأعلى: ${product.maxprice}$</p>
-            <div class="images">
-              ${product.images.map(image => `<img src="${image}" alt="صورة المنتج">`).join("")}
-            </div>
-            <p>الوصف: ${product.description}</p>
-          `;
-        })
-        .catch(error => console.error("خطأ:", error));
-    });
-  </script>
+    // جلب المنتجات
+    async function fetchProducts(filter = "all") {
+        try {
+            const response = await fetch(apiURL);
+            const products = await response.json();
+
+            const filteredProducts = filter === "all" 
+                ? products 
+                : products.filter(product => product.type === filter);
+
+            displayProducts(filteredProducts);
+        } catch (error) {
+            console.error("حدث خطأ أثناء جلب البيانات:", error);
+        }
+    }
+
+    function displayProducts(products) {
+        productGrid.innerHTML = "";
+
+        products.forEach(product => {
+            const card = document.createElement("div");
+            card.classList.add("product-card");
+
+            const firstImage = product.images && product.images.length > 0 ? product.images[0] : "placeholder.jpg";
+
+            card.innerHTML = `
+                <div class="profit">${product.profit || "0$"}</div>
+                <img src="${firstImage}" alt="صورة المنتج">
+                <div class="details">
+                    <span>${product.name}</span>
+                    <span>${product.minPrice || "غير محدد"}$</span>
+                </div>
+                <button onclick="showProductDetails(${product.id})">عرض التفاصيل</button>
+            `;
+
+            productGrid.appendChild(card);
+        });
+    }
+
+    function showProductDetails(productId) {
+        productGrid.style.display = 'none';
+        productDetails.style.display = 'block';
+
+        fetch(`${apiURL}/${productId}`)
+            .then(response => response.json())
+            .then(product => {
+                productDetails.innerHTML = `
+                    <h2>${product.name}</h2>
+                    <p class="price-range">السعر من ${product.minPrice || "غير محدد"}$ إلى ${product.maxPrice || "غير محدد"}$</p>
+                    <div class="product-images">
+                        ${product.images && product.images.map(img => `<img src="${img}" alt="صورة المنتج">`).join('')}
+                    </div>
+                    <p>${product.description || "لا يوجد وصف"}</p>
+                    <button onclick="backToProducts()">العودة إلى المنتجات</button>
+                `;
+            })
+            .catch(error => {
+                console.error("حدث خطأ أثناء جلب تفاصيل المنتج:", error);
+            });
+    }
+
+    function backToProducts() {
+        productDetails.style.display = 'none';
+        productGrid.style.display = 'grid';
+        fetchProducts();
+    }
+
+    function filterProducts(category) {
+        fetchProducts(category);
+        toggleMenu();
+    }
+
+    function toggleMenu() {
+        menuOverlay.style.display = menuOverlay.style.display === "flex" ? "none" : "flex";
+    }
+
+    function searchProducts() {
+        const query = document.getElementById("search-input").value.toLowerCase();
+
+        fetchProducts().then(() => {
+            document.querySelectorAll(".product-card").forEach(card => {
+                const name = card.querySelector(".details span").textContent.toLowerCase();
+                card.style.display = name.includes(query) ? "block" : "none";
+            });
+        });
+    }
+
+    fetchProducts();
+</script>
+
 </body>
 </html>
